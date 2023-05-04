@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Upload de Imagens</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  </head>
+  <body>
+    <h1>Upload de Imagens</h1>
+    <form id="uploadForm" enctype="multipart/form-data">
+      <input type="file" name="file" id="file">
+      <input type="submit" value="Upload">
+    </form>
+    <div id="progressBar">
+      <div id="progress"></div>
+    </div>
+    <script>
+      $(function() {
+        $('#uploadForm').submit(function(event) {
+          event.preventDefault();
+          var formData = new FormData($(this)[0]);
+          $.ajax({
+            url: '/upload',
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            xhr: function() {
+              var xhr = new window.XMLHttpRequest();
+              xhr.upload.addEventListener('progress', function(evt) {
+                if (evt.lengthComputable) {
+                  var percentComplete = evt.loaded / evt.total;
+                  $('#progress').css({
+                    width: percentComplete * 100 + '%'
+                  });
+                }
+              }, false);
+              return xhr;
+            },
+            success: function(data) {
+              console.log(data);
+            }
+          });
+        });
+      });
+    </script>
+  </body>
+</html>
